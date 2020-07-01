@@ -1,21 +1,70 @@
-FROM alpine:3.11
+FROM php:7.4-cli-alpine3.12
 
-# Install packages
-RUN apk update && apk upgrade && \
-    apk --no-cache add \
-    git php7 php7-pdo php7-pdo_mysql php7-mysqli php7-json php7-openssl php7-curl \
-    php7-zlib php7-xml php7-phar php7-dom php7-xmlreader php7-xmlwriter php7-ctype \
-    php7-mbstring php7-gd php7-redis php7-opcache php7-fileinfo php7-simplexml php7-tokenizer supervisor curl tzdata && \
-    apk --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing add php7-pecl-swoole && \
-    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    echo 'Asia/Shanghai' > /etc/timezone
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# Add Repositories
+RUN rm -f /etc/apk/repositories &&\
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/main" >> /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/community" >> /etc/apk/repositories
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    ln -s $(composer config --global home) /root/composer
+# Add Build Dependencies
+RUN apk add --no-cache --virtual .build-deps  \
+    zlib-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libxml2-dev \
+    bzip2-dev
 
-ENV PATH=$PATH:/root/composer/vendor/bin COMPOSER_ALLOW_SUPERUSER=1
+# Add Production Dependencies
+RUN apk add --update --no-cache \
+    git \
+    jpegoptim \
+    pngquant \
+    optipng \
+    supervisor \
+    curl \
+    tzdata \
+    nano \
+    icu-dev \
+    freetype-dev \
+    mysql-client
 
-RUN composer global require hirak/prestissimo && \
+# Configure & Install Extension
+RUN docker-php-ext-configure \
+    opcache --enable-opcache &&\
+    docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ &&\
+    docker-php-ext-install \
+    opcache \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    sockets \
+    json \
+    intl \
+    gd \
+    xml \
+    zip \
+    bz2 \
+    pcntl \
+    bcmath
+
+ENV SWOOLE_VERSION=4.5.2
+
+RUN pecl install swoole && docker-php-ext-enable swoole && \
+    pecl install redis && docker-php-ext-enable redis
+
+# Add Composer
+RUN curl -s https://getcomposer.org/installer | php --install-dir=/usr/local/bin/ --filename=composer && \
+    composer global require hirak/prestissimo && \
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV PATH="./vendor/bin:$PATH"
+
+# Remove Build Dependencies
+RUN apk del -f .build-deps
+
+# Setup Working Dir
+WORKDIR /var/www/html
+
+CMD ["/usr/bin/supervisord"]
