@@ -22,6 +22,10 @@ RUN apk add --update --no-cache \
     jpegoptim \
     pngquant \
     optipng \
+    autoconf \
+    g++ \
+    libtool \
+    make \
     supervisor \
     curl \
     tzdata \
