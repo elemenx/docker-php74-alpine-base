@@ -58,7 +58,7 @@ RUN pecl install swoole && docker-php-ext-enable swoole && \
     pecl install redis && docker-php-ext-enable redis
 
 # Add Composer
-RUN curl -s https://getcomposer.org/installer | php --install-dir=/usr/local/bin/ --filename=composer && \
+RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer && \
     composer global require hirak/prestissimo && \
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 
