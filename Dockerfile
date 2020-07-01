@@ -68,6 +68,7 @@ RUN git clone https://github.com/emcrisostomo/fswatch.git /root/fswatch && \
     ./autogen.sh && \
     ./configure && \
     make -j && \
+    make install && \
     cd /root && \
     rm -rf /root/fswatch
 
