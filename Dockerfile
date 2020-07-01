@@ -13,7 +13,8 @@ RUN apk add --no-cache --virtual .build-deps  \
     libjpeg-turbo-dev \
     libpng-dev \
     libxml2-dev \
-    bzip2-dev
+    bzip2-dev \
+    libzip-dev
 
 # Add Production Dependencies
 RUN apk add --update --no-cache \
@@ -42,7 +43,6 @@ RUN docker-php-ext-configure \
     json \
     intl \
     gd \
-    xml \
     zip \
     bz2 \
     pcntl \
