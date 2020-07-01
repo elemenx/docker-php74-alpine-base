@@ -25,6 +25,7 @@ RUN apk add --update --no-cache \
     autoconf \
     g++ \
     libtool \
+    libzip \
     make \
     supervisor \
     curl \
