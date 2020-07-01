@@ -66,7 +66,9 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PATH="./vendor/bin:$PATH"
 
 # Remove Build Dependencies
-RUN apk del -f .build-deps
+RUN apk del -f .build-deps && \
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo 'Asia/Shanghai' > /etc/timezone
 
 # Setup Working Dir
 WORKDIR /var/www/html
