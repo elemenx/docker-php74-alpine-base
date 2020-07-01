@@ -14,7 +14,8 @@ RUN apk add --no-cache --virtual .build-deps  \
     libpng-dev \
     libxml2-dev \
     bzip2-dev \
-    libzip-dev
+    libzip-dev \
+    gettext-dev
 
 # Add Production Dependencies
 RUN apk add --update --no-cache \
@@ -30,6 +31,7 @@ RUN apk add --update --no-cache \
     libzip \
     make \
     texinfo \
+    gettext \
     supervisor \
     curl \
     tzdata \
@@ -61,7 +63,13 @@ ENV SWOOLE_VERSION=4.5.2
 RUN pecl install swoole && docker-php-ext-enable swoole && \
     pecl install redis && docker-php-ext-enable redis
 
-RUN git clone https://github.com/emcrisostomo/fswatch.git /root/fswatch && cd /root/fswatch && ./autogen.sh && ./configure && make -j && cd /root && rm -rf /root/fswatch
+RUN git clone https://github.com/emcrisostomo/fswatch.git /root/fswatch && \
+    cd /root/fswatch && \
+    ./autogen.sh && \
+    ./configure && \
+    make -j && \
+    cd /root && \
+    rm -rf /root/fswatch
 
 # Add Composer
 RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer && \
