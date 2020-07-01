@@ -29,7 +29,7 @@ RUN apk add --update --no-cache \
     libtool \
     libzip \
     make \
-    textinfo \
+    texinfo \
     supervisor \
     curl \
     tzdata \
