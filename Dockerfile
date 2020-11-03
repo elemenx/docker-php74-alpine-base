@@ -38,6 +38,8 @@ RUN apk add --update --no-cache \
     nano \
     icu-dev \
     freetype-dev \
+    imagemagick-dev \
+    imagemagick \
     mysql-client
 
 # Configure & Install Extension
@@ -61,7 +63,8 @@ RUN docker-php-ext-configure \
 ENV SWOOLE_VERSION=4.5.2
 
 RUN pecl install swoole && docker-php-ext-enable swoole && \
-    pecl install redis && docker-php-ext-enable redis
+    pecl install redis && docker-php-ext-enable redis && \
+    pecl install imagick && docker-php-ext-enable imagick
 
 RUN git clone https://github.com/emcrisostomo/fswatch.git /root/fswatch && \
     cd /root/fswatch && \
