@@ -77,10 +77,10 @@ RUN git clone https://github.com/emcrisostomo/fswatch.git /root/fswatch && \
 
 # Add Composer
 RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer && \
-    composer global require hirak/prestissimo && \
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_MEMORY_LIMIT=-1
 ENV PATH="./vendor/bin:$PATH"
 
 # Remove Build Dependencies
