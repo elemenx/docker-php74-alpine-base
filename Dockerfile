@@ -4,8 +4,8 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Add Repositories
 RUN rm -f /etc/apk/repositories &&\
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/main" >> /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/community" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.14/main" >> /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.14/community" >> /etc/apk/repositories
 
 # Add Build Dependencies
 RUN apk add --no-cache --virtual .build-deps  \
@@ -60,7 +60,7 @@ RUN docker-php-ext-configure \
     pcntl \
     bcmath
 
-ENV SWOOLE_VERSION=4.5.2
+ENV SWOOLE_VERSION=4.8.1
 
 RUN pecl install swoole && docker-php-ext-enable swoole && \
     pecl install redis && docker-php-ext-enable redis && \
