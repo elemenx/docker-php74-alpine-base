@@ -15,7 +15,9 @@ RUN apk add --no-cache --virtual .build-deps  \
     libxml2-dev \
     bzip2-dev \
     libzip-dev \
-    gettext-dev
+    gettext-dev \
+    openssl-dev \
+    nghttp2-dev
 
 # Add Production Dependencies
 RUN apk add --update --no-cache \
@@ -40,7 +42,8 @@ RUN apk add --update --no-cache \
     freetype-dev \
     imagemagick-dev \
     imagemagick \
-    mysql-client
+    mysql-client \
+    nghttp2-libs
 
 # Configure & Install Extension
 RUN docker-php-ext-configure \
@@ -62,10 +65,13 @@ RUN docker-php-ext-configure \
 
 ENV SWOOLE_VERSION=4.8.1
 
-RUN docker-php-ext-configure swoole --enable-openssl --enable-http2 \
-    && docker-php-ext-install swoole-4.8.1 && docker-php-ext-enable swoole && \
-    pecl install redis && docker-php-ext-enable redis && \
-    pecl install imagick && docker-php-ext-enable imagick
+RUN mkdir -p /usr/src/php/ext/swoole \
+    && curl -L https://pecl.php.net/get/swoole-${SWOOLE_VERSION}.tgz | tar zx -C /usr/src/php/ext/swoole --strip-components=1 \
+    && docker-php-ext-configure swoole --enable-openssl --enable-http2 \
+    && docker-php-ext-install -j$(nproc) swoole \
+    && pecl install redis \
+    && pecl install imagick \
+    && docker-php-ext-enable redis imagick
 
 RUN git clone https://github.com/emcrisostomo/fswatch.git /root/fswatch && \
     cd /root/fswatch && \
