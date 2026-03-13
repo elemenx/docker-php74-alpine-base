@@ -62,7 +62,8 @@ RUN docker-php-ext-configure \
 
 ENV SWOOLE_VERSION=4.8.1
 
-RUN pecl install --configureoptions 'enable-openssl="yes" enable-http2="yes"' swoole && docker-php-ext-enable swoole && \
+RUN docker-php-ext-configure swoole --enable-openssl --enable-http2 \
+    && docker-php-ext-install swoole-4.8.1 && docker-php-ext-enable swoole && \
     pecl install redis && docker-php-ext-enable redis && \
     pecl install imagick && docker-php-ext-enable imagick
 
